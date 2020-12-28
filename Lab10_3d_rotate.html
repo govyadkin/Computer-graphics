@@ -1,0 +1,120 @@
+<!--<!DOCTYPE html> -->
+<html>
+
+<title>Задание №10</title>
+<!--From gist https://gist.github.com/govyadkin/0da81dd9bbf23f01914d2f2ddeaa0c22-->
+
+<body>
+<canvas id='lab10' height='1000' width='1000' style='border:1px solid'></canvas>
+
+<script>
+    let canvas = document.getElementById('lab10');
+    let ctx = canvas.getContext('2d');
+
+    let point = [100, 50, 20, 1]
+
+    let a = 20, b = 40, c = 10;
+
+    let shift = [1, 0, 0, a,
+        0, 1, 0, b,
+        0, 0, 1, c,
+        0, 0, 0, 1];
+
+    let sx = 2, sy = 0.5, sz = 3;
+
+    let scale = [sx, 0, 0, 0,
+        0, sy, 0, 0,
+        0, 0, sz, 0,
+        0, 0, 0, 1];
+
+    let alpha = 30 * Math.PI / 180;
+    let rotx = [
+        1, 0, 0, 0,
+        0, Math.cos(alpha), -1 * Math.sin(alpha), 0,
+        0, Math.sin(alpha), Math.cos(alpha), 0,
+        0, 0, 0, 1
+    ]
+
+    let roty = [
+        Math.cos(alpha), 0, -1 * Math.sin(alpha), 0,
+        0, 1, 0, 0,
+        Math.sin(alpha), 0, Math.cos(alpha), 0,
+        0, 0, 0, 1
+    ]
+
+    let rotz = [
+        Math.cos(alpha), -1 * Math.sin(alpha), 0, 0,
+        Math.sin(alpha), Math.cos(alpha), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ]
+    let alpha3 = 3 * Math.PI / 180;
+    let rotx3 = [
+        1, 0, 0, 0,
+        0, Math.cos(alpha3), -1 * Math.sin(alpha3), 0,
+        0, Math.sin(alpha3), Math.cos(alpha3), 0,
+        0, 0, 0, 1
+    ]
+    let rotz3 = [
+        Math.cos(alpha3), -1 * Math.sin(alpha3), 0, 0,
+        Math.sin(alpha3), Math.cos(alpha3), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ]
+    let roty3 = [
+        Math.cos(alpha3), 0, -1 * Math.sin(alpha3), 0,
+        0, 1, 0, 0,
+        Math.sin(alpha3), 0, Math.cos(alpha3), 0,
+        0, 0, 0, 1
+    ]
+
+    function Mv_prod(M, v) {
+        let res = [];
+        for (let i = 0; i < 4; ++i) {
+            res[i] = 0;
+            for (let j = 0; j < 4; ++j) {
+                res[i] += M[i * 4 + j] * v[j];
+            }
+        }
+        return res;
+    }
+
+    function MM_prod(M1, M2) {
+        let R = [];
+        for (let i = 0; i < 4; ++i) {
+            for (let j = 0; j < 4; ++j) {
+                R[i * 4 + j] = 0;
+                for (let k = 0; k < 4; ++k)
+                    R[i * 4 + j] += M1[i * 4 + k] * M2[k * 4 + j];
+            }
+        }
+        return R;
+    }
+
+    function obertca(M, color, size) {
+        let p1 = Mv_prod(M, point);
+        console.log(p1);
+        ctx.fillStyle = color;
+        ctx.fillRect(p1[0], p1[1], size, size);
+    }
+
+    console.log(point);
+    ctx.fillRect(point[0], point[1], 5, 5);
+
+    obertca(rotz, '#5dd414', 5);
+    obertca(rotx, '#d41414', 5);
+    obertca(roty, '#ffdc09', 5);
+
+    let rotxzy = MM_prod(MM_prod(rotx3, roty3), rotz3);
+    let p4 = point;
+
+    ctx.fillStyle = '#125ed0';
+    for (let i = 0; i < 120; ++i) {
+        p4 = Mv_prod(rotxzy, p4);
+        console.log(p4);
+        ctx.fillRect(p4[0] + 200, p4[1] + 200, 5, 5);
+    }
+</script>
+
+</body>
+</html>
